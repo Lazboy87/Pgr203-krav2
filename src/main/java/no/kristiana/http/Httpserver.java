@@ -13,10 +13,27 @@ public class Httpserver {
 
         Socket socket = serversocket.accept();
 
+        StringBuilder line = new StringBuilder();
         int c;
         while ((c = socket.getInputStream().read()) != -1) {
-            System.out.print((char) c);
+            if (c=='\r'){
+                c = socket.getInputStream().read();
+                System.out.println(line);
+                if (line.toString().isBlank()){
+                    break;
+                }
+                line = new StringBuilder();
+            }
+            line.append((char)c);
+
         }
+
+        socket.getOutputStream().write(("HTTP/1.1 200 OK\r\n"+
+                "Content-type: text/plain\r\n"+
+                "Content-length: 12\r\n"+
+                "Connection: close\r\n"+
+                "\r\n"+
+                "Hello World!").getBytes());
     }
 
 }
